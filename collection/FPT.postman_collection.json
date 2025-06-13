@@ -1,0 +1,474 @@
+{
+	"info": {
+		"_postman_id": "2b456904-fd77-41e0-8936-ea9838b49afc",
+		"name": "FPT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28580802"
+	},
+	"item": [
+		{
+			"name": "todoapp",
+			"item": [
+				{
+					"name": "get all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Phúc\",\r\n    \"age\": 30\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/todo/getAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"todo",
+								"getAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Task học Hoá\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/todo/createTask",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"todo",
+								"createTask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Phúc\",\r\n    \"age\": 30\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/todo/deleteTask/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"todo",
+								"deleteTask",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Task todo app today\",\r\n    \"isDone\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/todo/updateTask/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"todo",
+								"updateTask",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Fun play",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login success",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let email = `bomchip02@gmail.com`;\r",
+											"pm.environment.set(\"email\", email);\r",
+											"\r",
+											"let password = 'phucdepzai123'\r",
+											"pm.environment.set(\"password\", password);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Response has accessToken and refreshToken properties\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"\r",
+											"    pm.expect(data.data.accessToken).to.be.a(\"string\");\r",
+											"\r",
+											"    pm.environment.set(\"accessToken\", data.data.accessToken);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/auth/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login fail",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let email = `user_${Math.floor(Math.random() * 10000)}@gmail.com`;\r",
+											"pm.environment.set(\"email\", email);\r",
+											"\r",
+											"let password = Math.floor(Math.random() * 10000).toString(36);\r",
+											"pm.environment.set(\"password\", password);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Response body contains 'Invalid email or password'\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.message).to.include('Invalid email or password');\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/auth/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user success",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has right format\", () => {\r",
+											"    const data = pm.response.json().data;\r",
+											"    \r",
+											"    pm.expect(data).to.be.an('object');\r",
+											"\r",
+											"    pm.expect(data).to.have.property('_id');\r",
+											"    pm.expect(data).to.have.property('email');\r",
+											"    pm.expect(data).to.have.property('username');\r",
+											"\r",
+											"    pm.expect(data).to.not.have.property('password');\r",
+											"\r",
+											"    pm.expect(data._id).to.be.a('number');\r",
+											"    pm.expect(data.email).to.be.a('string');\r",
+											"    pm.expect(data.username).to.be.a('string');\r",
+											"\r",
+											"    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\r",
+											"    pm.expect(data.email).to.match(emailRegex);\r",
+											"\r",
+											"    const namePattern = /^[a-zA-Z0-9\\s_-]+$/;\r",
+											"    pm.expect(data.username).to.match(namePattern);\r",
+											"    pm.expect(data.username.length).to.be.at.least(2);\r",
+											"    pm.expect(data.username.length).to.be.at.most(100);\r",
+											"    \r",
+											"    if (data.hasOwnProperty('date_of_birth') && data.date_of_birth !== null) {\r",
+											"        pm.expect(data.date_of_birth).to.be.a('string');\r",
+											"        const dateRegex = /^\\d{4}-\\d{2}-\\d{2}$/;\r",
+											"        pm.expect(data.date_of_birth).to.match(dateRegex);\r",
+											"    }\r",
+											"    \r",
+											"    if (data.hasOwnProperty('address') && data.address !== null) {\r",
+											"        pm.expect(data.address).to.be.a('string');\r",
+											"    }\r",
+											"\r",
+											"    pm.expect(data._id).to.be.above(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Save user ID to environment\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.environment.set(\"created_user_id\", data._id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const randomNunmber = Math.floor(Math.random() * 10000);\r",
+											"const email = `user_${randomNunmber}@gmail.com`;\r",
+											"const password = `password${randomNunmber}`;\r",
+											"const name_account = `user${randomNunmber}`;\r",
+											"const date_of_birth = \"20/12/2003\";\r",
+											"const address = \"123 Main St\";\r",
+											"\r",
+											"pm.environment.set(\"email\", email);\r",
+											"pm.environment.set(\"password\", password);\r",
+											"pm.environment.set(\"name_account\", name_account);\r",
+											"pm.environment.set(\"date_of_birth\", date_of_birth);\r",
+											"pm.environment.set(\"address\", address)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"name_account\": \"{{name_account}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"date_of_birth\": \"{{date_of_birth}}\",\r\n    \"address\": \"{{address}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/auth/register",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Phuc\",\r\n    \"pass\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiZXlKdVlXMWxJam9pVUdoMVl5SXNJbkJoYzNNaU9pSXhNak1pZlE9PSIsImlhdCI6MTc0NTMwODMwN30.M9Wu6rUOMX0csSXeGQejkY45GLHGXHjfwTLZ9qc6pWw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5050/api/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5050",
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Phúc\",\r\n    \"age\": 30\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5050/api/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5050",
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
