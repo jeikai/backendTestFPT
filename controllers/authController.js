@@ -4,13 +4,13 @@ const validator = require('../utils/validator');
 const Token = require('../models/token');
 
 const generateAccessToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, process.env.JWT_SECRET || 'Fun Play', {
         expiresIn: '30d',
     });
 };
 
 const generateRefreshToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, process.env.JWT_SECRET || 'Fun Play', {
         expiresIn: '30d',
     });
 };
@@ -197,7 +197,7 @@ const refreshToken = async (req, res) => {
         const { userId, oldRefreshToken } = req.body;
 
         // Verify old refresh token
-        const decoded = jwt.verify(oldRefreshToken, process.env.JWT_SECRET);
+        const decoded = jwt.verify(oldRefreshToken, process.env.JWT_SECRET || 'Fun Play');
 
         // Delete old refresh token
         await Token.deleteOne({ userId: userId, refreshToken: oldRefreshToken });
