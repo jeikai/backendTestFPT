@@ -1,0 +1,46 @@
+name: Node.js CI/CD with EC2 Deploy
+
+on:
+  push:
+    branches:
+      - '**'  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build (if needed)
+        run: npm run build || echo "No build script, skip"
+
+  deploy:
+    if: github.ref == 'refs/heads/main' 
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/yourrepo
+            git pull origin main
+            npm install
+            pm2 restart index.js || pm2 start index.js
+            bash ./migrate.sh
