@@ -42,6 +42,9 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Download Docker Image
         uses: actions/download-artifact@v4
         with:
@@ -55,7 +58,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           source: "my-node-app.tar"
-          target: "~/"
+          target: "~"
 
       - name: Copy migrations folder to EC2
         uses: appleboy/scp-action@v0.1.4
