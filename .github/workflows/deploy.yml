@@ -57,7 +57,16 @@ jobs:
           source: "my-node-app.tar"
           target: "~/"
 
-      - name: Deploy Docker Container on EC2
+      - name: Copy migrations folder to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          source: "migrations"
+          target: "~"
+
+      - name: Deploy Docker Container and Run Migrations
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -68,3 +77,8 @@ jobs:
             docker stop my-node-app || true
             docker rm my-node-app || true
             docker run -d --name my-node-app -p 80:3000 my-node-app
+
+            echo "Running migrations..."
+            cd ~/migrations
+            chmod +x migrate.sh
+            ./migrate.sh
