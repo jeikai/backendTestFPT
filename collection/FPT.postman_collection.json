@@ -184,9 +184,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseURL}}/auth/login",
+									"raw": "{{baseURLAWS}}/auth/login",
 									"host": [
-										"{{baseURL}}"
+										"{{baseURLAWS}}"
 									],
 									"path": [
 										"auth",
@@ -348,12 +348,11 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseURL}}/auth/register",
+									"raw": "{{baseURLAWS}}auth/register",
 									"host": [
-										"{{baseURL}}"
+										"{{baseURLAWS}}auth"
 									],
 									"path": [
-										"auth",
 										"register"
 									]
 								}
@@ -361,6 +360,62 @@
 							"response": []
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Test Fun Bug",
+			"item": [
+				{
+					"name": "GET all project",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURLAWS}}project",
+							"host": [
+								"{{baseURLAWS}}project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new project",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Cleena\",\r\n    \"category\": \"Beauty\",\r\n    \"description\": \"Landing page for beauty\",\r\n    \"technologies\": \"React JS\",\r\n    \"link\": \"https://github.com\",\r\n    \"status\": \"Completed\",\r\n    \"year\": 2025\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURLAWS}}/project",
+							"host": [
+								"{{baseURLAWS}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

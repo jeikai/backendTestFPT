@@ -1,18 +1,27 @@
-# Dockerfile
-FROM node:20
+# -------- Giai đoạn 1: Cài dependencies đầy đủ --------
+FROM node:20 AS deps
 
-# Tạo thư mục làm việc
 WORKDIR /app
 
-# Copy package info và cài đặt dependencies trước
+# Copy file package trước để cache hiệu quả
 COPY package*.json ./
 RUN npm install
 
-# Copy toàn bộ mã nguồn vào container
+# -------- Giai đoạn 2: Copy code và chỉ dùng production deps --------
+FROM node:20-slim
+
+WORKDIR /app
+
+# Copy lại package.json
+COPY package*.json ./
+
+# Cài chỉ production dependencies (bỏ dev)
+RUN npm install --omit=dev
+
+# Copy code từ máy host
 COPY . .
 
-# Expose cổng (tuỳ theo app, ví dụ 3000)
-EXPOSE 5000
+# Nếu bạn có thư mục như tests, docs, bạn có thể loại bỏ tại đây nếu cần
 
-# Khởi chạy ứng dụng
+EXPOSE 5000
 CMD ["node", "index.js"]

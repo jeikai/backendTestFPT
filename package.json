@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
-    "test:newman": "newman run collection/FPT.postman_collection.json -e collection/fptTest.postman_environment.json --folder \"Test Fun play\""
+    "test:newman": "newman run collection/FPT.postman_collection.json -e collection/fptTest.postman_environment.json --folder \"Test Fun Bug\""
   },
   "keywords": [],
   "author": "",
