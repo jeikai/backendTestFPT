@@ -6,34 +6,11 @@ on:
       - '**'
 
 jobs:
-  test:
-    if: github.ref != 'refs/heads/main'
-    name: API Test with Newman
+  lint_and_unit_test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install Newman
-        run: npm install -g newman
-
-      - name: Run Newman Tests
-        run: |
-          newman run collection/FPT.postman_collection.json \
-            -e collection/fptTest.postman_environment.json \
-            --folder "Test Fun Bug"
-
-  build:
-    if: github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -41,10 +18,32 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Build (if needed)
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm run test
+
+  build:
+    needs: lint_and_unit_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build (if needed)
         run: npm run build || echo "No build script, skip"
 
       - name: Build Docker Image
@@ -53,7 +52,7 @@ jobs:
       - name: Save Docker Image to .tar file
         run: docker save my-node-app -o my-node-app.tar
 
-      - name: Upload Docker Image to Artifact
+      - name: Upload Docker Image
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
@@ -61,27 +60,20 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main'
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
         with:
-          node-version: '20'
+          name: docker-image
+          path: .
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Docker Image
-        run: docker build -t my-node-app .
-
-      - name: Save Docker Image to .tar file
-        run: docker save my-node-app -o my-node-app.tar
-
-      - name: Copy Docker Image to EC2
+      - name: Copy Docker image to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -99,7 +91,7 @@ jobs:
           source: "migrations"
           target: "~"
 
-      - name: Deploy Docker Container and Run Migrations
+      - name: Deploy Docker container and run migrations
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -115,3 +107,25 @@ jobs:
             cd ~/migrations
             chmod +x migrate.sh
             ./migrate.sh
+
+  integration_test:
+    if: github.ref == 'refs/heads/main'
+    needs: deploy
+    name: Integration Test with Newman
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Wait for App to be available
+        run: sleep 10
+
+      - name: Run Postman Tests
+        run: |
+          newman run collection/FPT.postman_collection.json \
+            -e collection/fptTest.postman_environment.json \
+            --folder "Test Fun Bug"
