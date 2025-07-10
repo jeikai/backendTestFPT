@@ -5,22 +5,19 @@ const routes = require('./routes');
 
 const app = express();
 
-// CORS middleware 
 app.use(cors()); 
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+
 app.use('/api', routes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
