@@ -109,7 +109,7 @@ jobs:
             docker load -i ~/my-node-app.tar
             docker stop my-node-app || true
             docker rm my-node-app || true
-            docker run -d --name my-node-app -p 80:5000 my-node-app
+            docker run -d --name my-node-app -p 5000:5000 my-node-app
 
             echo "Running migrations..."
             cd ~/migrations
