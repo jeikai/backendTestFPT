@@ -2,12 +2,12 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || '172.17.0.1',
+    host: '172.17.0.1',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'funbug',
     waitForConnections: true,
-    connectionLimit: 10, // Giới hạn số kết nối đồng thời
+    connectionLimit: 10,
     queueLimit: 0
 });
 
